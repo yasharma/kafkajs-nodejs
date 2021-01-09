@@ -7,10 +7,13 @@ let _dbClient: Db;
 export const setupDB = async () => {
   try {
     if (!_dbClient) {
-      const _dbConnection = await MongoClient.connect(config.mongoDbUri, { useNewUrlParser: true, useUnifiedTopology: true });
+      const _dbConnection = await MongoClient.connect(
+        config.mongoDbUri,
+        { useNewUrlParser: true, useUnifiedTopology: true },
+      );
       _dbClient = _dbConnection.db();
       // _dbClient.collection('sasa').createIndex
-      logger.info('Database is ready...'); 
+      logger.info('Database is ready...');
     }
   } catch (err) {
     logger.error('Failed to Initialize the socket:', err);
