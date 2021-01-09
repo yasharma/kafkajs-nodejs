@@ -1,17 +1,11 @@
 # Service
-learning sentiment analysis backend service
+Nodejs kafak mongodb service
 
 ## Service Architecture:
 Node.js backend with MongoDB clsuter
 
-## Service Features:
-
-## Onboarding Checklist / FAQ:
-*  [Click here](./CheckList.md)
-
-## Build Steps:
-* **swarm mode** - development: `./deploy dev`
-* **swarm mode** - production-like: `./deploy`
+## Start Steps:
+* development: `./start.sh`
 
 ## Run Tests:
 ./test.sh
@@ -37,18 +31,7 @@ Node.js backend with MongoDB clsuter
 
 1. `NODE_ENV=production` 
 2. `LOGGER_CONFIG={"disableClustering":true,"appenders":{"out":{"type":"stdout","layout":{"type":"pattern","pattern":"%[ [%d] [%p] %] %c - %x{correlationId} - %m"}}},"categories":{"default":{"appenders":["out"],"level":"trace"}}}`
-3. `SQL_DB_USERNAME=dbUsername`
-4. `SQL_DB_PASSWORD=dbPassword`
-5. `SQL_DB_HOST=sqldb`
-5. `SQL_DB_PORT=1433` (default)
-6. `SQL_DB_NAME=doh`
-7. `REDIS_HOST=host`
-8. `REDIS_PORT=6379`
-9. `MORNING_CRON=pattern`
-10. `EVENING_CRON=pattern`
-11. `ACCESS_TOKEN=ACCESS_TOKEN`
-12. `DB_CONNECTION_TIMEOUT=15000` (default)
-13. `DB_REQUEST_TIMEOUT=15000` (default)
+3. `KAFKA_BROKERS=[kafka:9092]`
 
 ## Service Dependencies:
 ### Upstream
@@ -56,10 +39,24 @@ Node.js backend with MongoDB clsuter
 
 ### Downstream
 1. MongoDB
-2. Redis
+2. Kafak
 
 ## Ports Used:
 * **80**
 
 ## API
-[Postman API Docs]()
+`POST - /produce-event`
+
+Request Body:
+```json
+{
+    "messages": [
+        {
+            "body": "Hello message 1"
+        },
+        {
+            "body": "Kafak message 2"
+        }
+    ]
+}
+```

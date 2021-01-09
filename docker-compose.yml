@@ -8,6 +8,7 @@ services:
       PORT: 80
       # NODE_ENV: production # to test production builds enable this.
       MONGO_DB_URL: mongodb://kafkajs-nodejs-mongodb:27017/kafkajs-nodejs
+      KAFKA_BROKERS: kafka:9092
     ports:
       - 8099:80
     volumes:

@@ -1,3 +1,3 @@
 echo Installing Dependancies and Compiling Project
-# yarn install
+yarn install
 yarn run dev

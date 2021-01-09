@@ -8,9 +8,9 @@ import loggerFactory from './utils/logging';
 import { setupDB } from './initializer';
 
 // Routes ...
-import setupRoute from './routes/setup.routes';
-import filterRoute from './routes/filter.route';
 import { tokenHandler, errorHandler, corsHandler, healthCheckHandler, correlationIdHandler } from './utils/middlewares';
+import KafkaService from './services/KafkaService';
+import eventRoutes from './routes/event.routes';
 
 // Intializations
 const logger = loggerFactory.getLogger();
@@ -25,6 +25,8 @@ app.disable('etag');
 let server: import('http').Server;
 (async () => {
   await setupDB();
+  const _kafkaService = new KafkaService();
+  await _kafkaService.connect();
   app.get('/healthcheck', healthCheckHandler);
 
   app.all('/*', corsHandler);
@@ -42,8 +44,7 @@ let server: import('http').Server;
   // parse application/json
   app.use(bodyParser.json());
 
-  app.use('/setup', setupRoute());
-  app.use('/filter', filterRoute())
+  app.use('/produce-event', eventRoutes(_kafkaService));
 
   app.use(errorHandler);
 
