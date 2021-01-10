@@ -6,7 +6,10 @@ export class EventService {
   }
 
   async send(body: { messages: { body: 'string' }[] }) {
-    const _messages = body.messages.map(message => ({ value: message.body, key: Date.now().toString() }));
+    const _messages = body.messages.map(message => ({
+      value: JSON.stringify(message.body),
+      key: Date.now().toString(),
+    }));
     await this._kafkaService.send(_messages);
     return {
       message: 'Data saved!',
