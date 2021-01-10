@@ -11,6 +11,7 @@ import { setupDB } from './initializer';
 import { tokenHandler, errorHandler, corsHandler, healthCheckHandler, correlationIdHandler } from './utils/middlewares';
 import KafkaService from './services/KafkaService';
 import eventRoutes from './routes/event.routes';
+import { EventService } from './services/EventService';
 
 // Intializations
 const logger = loggerFactory.getLogger();
@@ -26,7 +27,8 @@ let server: import('http').Server;
 (async () => {
   await setupDB();
   const _kafkaService = new KafkaService();
-  await _kafkaService.connect();
+  await _kafkaService.connectProducer();
+
   app.get('/healthcheck', healthCheckHandler);
 
   app.all('/*', corsHandler);
@@ -50,13 +52,10 @@ let server: import('http').Server;
 
   server = app.listen(config.port, () => {
     logger.info(`application is listening on port ${config.port} ...`);
-    try {
-      // new SyncerCron(_redisClient)._start(config.morningCron);
-      // new SyncerCron(_redisClient)._start(config.eveningCron);
-    } catch (error) {
-      logger.error(error);
-    }
   });
+  const _eventService = new EventService(_kafkaService);
+  await _kafkaService.connectConsumer();
+  await _kafkaService.run(_eventService.save.bind(_eventService));
 })().catch(err => {
   if (server && server.listening) server.close();
   logger.error(err);

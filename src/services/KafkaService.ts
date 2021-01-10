@@ -1,4 +1,4 @@
-import { Kafka, Message, Producer } from 'kafkajs';
+import { Consumer, Kafka, Message, Producer } from 'kafkajs';
 import config from '../config';
 import loggerFactory from '../utils/logging';
 const logger = loggerFactory.getLogger('KafkaService');
@@ -6,15 +6,17 @@ const logger = loggerFactory.getLogger('KafkaService');
 class KafkaService {
   private _kafka: Kafka;
   private _producer: Producer;
+  private _consumer: Consumer;
   constructor() {
     this._kafka = new Kafka({
       clientId: config.clientId,
       brokers: config.kafkaBrokers.split(','),
     });
     this._producer = this._kafka.producer();
+    this._consumer = this._kafka.consumer({ groupId: 'my-group' });
   }
 
-  async connect() {
+  async connectProducer() {
     try {
       await this._producer.connect();
       logger.info('Kafka Producer connected');
@@ -24,10 +26,28 @@ class KafkaService {
     }
   }
 
+  async connectConsumer(topic = config.kafkaTopic) {
+    try {
+      await this._consumer.connect();
+      await this._consumer.subscribe({ topic, fromBeginning: true });
+    } catch (error) {
+      logger.error(error);
+      await this._consumer.disconnect();
+    }
+  }
+
   async send(messages: Message[]) {
     await this._producer.send({
-      topic: 'KN-V1',
+      topic: config.kafkaTopic,
       messages,
+    });
+  }
+
+  async run(func: (m: string | undefined) => Promise<void>) {
+    return this._consumer.run({
+      eachMessage: async ({ message }) => {
+        await func(message.value ? message.value.toString() : undefined);
+      },
     });
   }
 }

@@ -13,4 +13,9 @@ export class EventService {
       data: _messages,
     };
   }
+
+  save = async (message: string | undefined) => {
+    console.log('>>>>>', message);
+    return;
+  };
 }

@@ -32,6 +32,7 @@ Node.js backend with MongoDB clsuter
 1. `NODE_ENV=production` 
 2. `LOGGER_CONFIG={"disableClustering":true,"appenders":{"out":{"type":"stdout","layout":{"type":"pattern","pattern":"%[ [%d] [%p] %] %c - %x{correlationId} - %m"}}},"categories":{"default":{"appenders":["out"],"level":"trace"}}}`
 3. `KAFKA_BROKERS=[kafka:9092]`
+4. `KAFKA_TOPIC=topic-name`
 
 ## Service Dependencies:
 ### Upstream
