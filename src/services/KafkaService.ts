@@ -13,7 +13,7 @@ class KafkaService {
       brokers: config.kafkaBrokers.split(','),
     });
     this._producer = this._kafka.producer();
-    this._consumer = this._kafka.consumer({ groupId: 'my-group' });
+    this._consumer = this._kafka.consumer({ groupId: 'my-group-v1' });
   }
 
   async connectProducer() {
@@ -49,6 +49,16 @@ class KafkaService {
         await func(message.value ? message.value.toString() : undefined);
       },
     });
+  }
+
+  seek(partition = 0, offset = '0', topic = config.kafkaTopic) {
+    void this._consumer.run({
+      // eslint-disable-next-line @typescript-eslint/require-await
+      eachMessage: async () => {
+        return;
+      },
+    });
+    return this._consumer.seek({ topic, partition, offset });
   }
 }
 
