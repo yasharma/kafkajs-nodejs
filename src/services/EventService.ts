@@ -1,8 +1,15 @@
+import { IMessage } from '../models/entities/IMessage';
+import { EventRepository } from '../repositories/EventRepository';
+import loggerFactory from '../utils/logging';
 import KafkaService from './KafkaService';
-
+const logger = loggerFactory.getLogger('EventService');
 export class EventService {
   constructor(protected _kafkaService: KafkaService) {
     // body
+  }
+
+  protected get eventRepo() {
+    return new EventRepository();
   }
 
   async send(body: { messages: { body: 'string' }[] }) {
@@ -17,8 +24,9 @@ export class EventService {
     };
   }
 
-  save = async (message: string | undefined) => {
-    console.log('>>>>>', message);
+  async save(data: IMessage) {
+    logger.info('Consumer: ', data);
+    await this.eventRepo.upsert(data);
     return;
-  };
+  }
 }

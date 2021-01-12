@@ -1,5 +1,6 @@
-import { Consumer, Kafka, Message, Producer } from 'kafkajs';
+import { Consumer, EachMessagePayload, Kafka, Message, Producer } from 'kafkajs';
 import config from '../config';
+import { IMessage } from '../models/entities/IMessage';
 import loggerFactory from '../utils/logging';
 const logger = loggerFactory.getLogger('KafkaService');
 
@@ -43,10 +44,16 @@ class KafkaService {
     });
   }
 
-  async run(func: (m: string | undefined) => Promise<void>) {
+  async run(func: (d: IMessage) => Promise<void>) {
     return this._consumer.run({
-      eachMessage: async ({ message }) => {
-        await func(message.value ? message.value.toString() : undefined);
+      eachMessage: async (data: EachMessagePayload) => {
+        await func({
+          topic: data.topic,
+          partition: data.partition,
+          message: data.message.value ? data.message.value.toString() : undefined,
+          key: data.message.key ? data.message.key.toString() : undefined,
+          timestamp: data.message.timestamp,
+        });
       },
     });
   }

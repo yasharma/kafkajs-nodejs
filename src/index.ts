@@ -56,6 +56,7 @@ let server: import('http').Server;
   const _eventService = new EventService(_kafkaService);
   await _kafkaService.connectConsumer();
   await _kafkaService.run(_eventService.save.bind(_eventService));
+  // _kafkaService.seek();
 })().catch(err => {
   if (server && server.listening) server.close();
   logger.error(err);
